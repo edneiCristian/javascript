@@ -15,7 +15,9 @@ class User {
 
     }
 
-    
+    get id() {
+        return this._id;
+    }
 
     get register() {
         return this._register;
@@ -87,20 +89,62 @@ class User {
 
     }
 
-    save() {
+    getNewID() {
 
+        let userID = parseInt(localStorage.getItem("userID"));
+
+        if (!userID > 0) userID = 0;
+
+        userID++;
+
+        localStorage.setItem("userID", userID);
+
+        return userID;
+
+    }
+
+    save() {
 
         let users = User.getUsersStorage();
 
         if (this.id > 0) {
 
-            let user = users.filter(u => { return u._id === this.id; })
+            users.map(u => {
+
+                if (u._id == this.id) {
+
+                    Object.assign(u, this);
+
+                }
+                return u;
+
+            });
+
+        } else {
+
+            this._id = this.getNewID();
+
+            users.push(this);
 
         }
 
-        users.push(data);
+        localStorage.setItem("users", JSON.stringify(users));
 
-        // sessionStorage.setItem("users", JSON.stringify(users));
+    }
+
+    remove() {
+
+        let users = User.getUsersStorage();
+
+        users.forEach((userData, index) => {
+
+            if (this._id == userData._id) {
+
+                users.splice(index, 1);
+            }
+
+        });
+
         localStorage.setItem("users", JSON.stringify(users));
 
     }
